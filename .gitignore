@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+.vite/
+
+# Editors / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# ---- Xcode (apps/ios) ----
+apps/ios/*.xcodeproj
+apps/ios/*.xcworkspace
+apps/ios/DerivedData/
+apps/ios/build/
+xcuserdata/
+*.xcuserstate

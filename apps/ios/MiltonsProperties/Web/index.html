@@ -1,0 +1,989 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Milton's Properties</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
+
+:root{
+  --ink:#141A22; --ink-2:#3E4A59; --ink-3:#7A8794;
+  --paper:#F7F6F3; --card:#FFFFFF; --line:#ECE9E3;
+  --accent:#FF5A4D; --accent-ink:#E8412F; --accent-wash:#FFF0EE;
+  --vacant:#2563EB; --pending:#E08A00; --leased:#0E9F6E; --alert:#EF4444;
+  --gold:#B8863B; --gold-wash:#FBF6EC;
+  --shadow-sm:0 1px 2px rgba(20,26,34,.04),0 1px 3px rgba(20,26,34,.06);
+  --shadow:0 4px 6px -1px rgba(20,26,34,.05),0 12px 24px -8px rgba(20,26,34,.10);
+  --shadow-lg:0 20px 48px -12px rgba(20,26,34,.20);
+  --r:16px; --r-sm:10px; --r-lg:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
+  font-size:15px;line-height:1.55;letter-spacing:-.006em;
+  padding-bottom:calc(80px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color:transparent;overscroll-behavior-y:none;-webkit-font-smoothing:antialiased}
+.masthead-in{padding-top:calc(16px + env(safe-area-inset-top))}
+.shell{padding-left:calc(24px + env(safe-area-inset-left));padding-right:calc(24px + env(safe-area-inset-right))}
+.sheet{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+input,select,textarea{font-size:16px;font-family:inherit}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+/* ---------- masthead ---------- */
+.masthead{background:rgba(247,246,243,.82);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.masthead-in{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.wordmark{font-family:'Fraunces',serif;font-weight:600;font-size:20px;letter-spacing:-.02em;line-height:1;display:flex;align-items:center;gap:9px}
+.wordmark::before{content:"";width:26px;height:26px;border-radius:7px;flex-shrink:0;
+  background:linear-gradient(145deg,var(--accent),var(--accent-ink));
+  box-shadow:0 2px 8px rgba(232,65,47,.35);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 21V9l8-5 8 5v12h-5v-6h-6v6z' fill='black'/%3E%3C/svg%3E") center/70% no-repeat,linear-gradient(#000,#000);mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 21V9l8-5 8 5v12h-5v-6h-6v6z' fill='black'/%3E%3C/svg%3E") center/70% no-repeat}
+.wordmark span{display:none}
+.roles{display:flex;margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;box-shadow:var(--shadow-sm);gap:2px}
+.role{padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-3);border-radius:999px;transition:all .18s cubic-bezier(.4,0,.2,1)}
+.role:hover{color:var(--ink)}
+.role[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:0 2px 6px rgba(20,26,34,.2)}
+.whoami{font-size:12px;color:var(--ink-3);font-weight:500;width:100%;text-align:right;margin-top:-4px}
+
+/* ---------- shell ---------- */
+.shell{max-width:1200px;margin:0 auto;padding:32px 24px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--accent-ink);
+  display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+h1.page{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4.5vw,40px);letter-spacing:-.025em;line-height:1.04}
+.sub{color:var(--ink-2);font-size:15.5px;max-width:60ch;margin-top:10px;line-height:1.6}
+.section{margin-top:40px}
+
+/* ---------- stat strip ---------- */
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:24px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.stat b{display:block;font-family:'Fraunces',serif;font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.stat i{font-style:normal;font-size:12px;font-weight:600;letter-spacing:.01em;text-transform:uppercase;color:var(--ink-3);display:block;margin-top:6px}
+.stat.hot{background:linear-gradient(160deg,var(--accent-wash),var(--card));border-color:#FFD9D4}
+.stat.hot b{color:var(--accent-ink)}
+
+/* ---------- rows / portfolio ---------- */
+.rows{display:flex;flex-direction:column;gap:10px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:var(--r);display:grid;grid-template-columns:4px 1fr auto;
+  overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .18s,box-shadow .18s}
+.row:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.rail{background:var(--ink-3)}
+.rail.vacant{background:var(--vacant)} .rail.pending{background:var(--pending)}
+.rail.leased{background:var(--leased)} .rail.alert{background:var(--alert)}
+.row-body{padding:16px 20px;min-width:0}
+.addr{font-weight:700;font-size:15.5px;letter-spacing:-.01em}
+.meta{font-size:12.5px;color:var(--ink-3);margin-top:5px;display:flex;gap:14px;flex-wrap:wrap;font-weight:500}
+.row-side{padding:16px 20px;text-align:right;white-space:nowrap;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:7px}
+.money{font-family:'Fraunces',serif;font-size:18px;font-weight:600;letter-spacing:-.01em}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.tag.vacant{color:var(--vacant);background:#EFF4FF} .tag.pending{color:var(--pending);background:#FFF6E6}
+.tag.leased{color:var(--leased);background:#E7F7F0} .tag.alert{color:var(--alert);background:#FEECEC}
+
+/* ---------- decision cards ---------- */
+.decisions{display:grid;gap:16px}
+.decision{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:var(--shadow);animation:rise .4s cubic-bezier(.2,.8,.2,1) both;position:relative}
+.decision::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--pending),#F5B547)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.decision > .rail{display:none}
+.decision-in{padding:24px 26px}
+.kind{font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--pending)}
+.decision h3{font-family:'Fraunces',serif;font-weight:600;font-size:22px;letter-spacing:-.02em;margin-top:6px}
+.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:18px 0}
+.term{background:var(--paper);border-radius:var(--r-sm);padding:12px 14px}
+.term i{font-style:normal;display:block;font-size:11px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-3)}
+.term b{display:block;font-size:15px;font-weight:700;margin-top:5px;letter-spacing:-.01em}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{padding:11px 20px;font-size:14px;font-weight:700;border-radius:999px;letter-spacing:-.01em;transition:all .18s cubic-bezier(.4,0,.2,1)}
+.btn.approve{background:var(--ink);color:#fff;box-shadow:0 4px 12px rgba(20,26,34,.18)}
+.btn.approve:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(20,26,34,.26)}
+.btn.decline{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+.btn.decline:hover{border-color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink-2);font-weight:600}
+.btn.ghost:hover{color:var(--ink);background:var(--paper)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* ---------- listing cards (photo-forward) ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+.listing{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  display:flex;flex-direction:column;box-shadow:var(--shadow-sm);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s}
+.listing:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.facade-wrap{position:relative;overflow:hidden}
+.facade{height:200px;display:block;width:100%;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.listing:hover .facade{transform:scale(1.05)}
+.facade-wrap::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(20,26,34,.28),transparent 42%);pointer-events:none}
+.facade-badge{position:absolute;top:14px;left:14px;z-index:2;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
+  padding:6px 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;box-shadow:var(--shadow-sm)}
+.facade-fav{position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(8px);display:grid;place-items:center;box-shadow:var(--shadow-sm);color:var(--ink-3);transition:color .18s,transform .18s}
+.facade-fav:hover{color:var(--accent);transform:scale(1.1)}
+.listing-in{padding:18px 20px;flex:1;display:flex;flex-direction:column}
+.listing h3{font-family:'Fraunces',serif;font-weight:600;font-size:19px;letter-spacing:-.02em}
+.listing .actions{margin-top:auto;padding-top:16px}
+.btn.wide{width:100%;justify-content:center}
+
+/* ---------- pipeline ---------- */
+.pipe{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;box-shadow:var(--shadow-sm)}
+.pipe h3{font-family:'Fraunces',serif;font-weight:600;font-size:20px;letter-spacing:-.02em}
+.steps{margin-top:18px;border-left:2px solid var(--line);padding-left:2px}
+.step{position:relative;padding:0 0 20px 26px}
+.step:last-child{padding-bottom:0}
+.step::before{content:"";position:absolute;left:-8px;top:3px;width:13px;height:13px;border-radius:50%;background:var(--card);border:2px solid var(--ink-3);box-shadow:0 0 0 4px var(--card)}
+.step.done::before{background:var(--leased);border-color:var(--leased)}
+.step.now::before{background:var(--pending);border-color:var(--pending)}
+.step.now{animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:.55}}
+.step b{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.01em}
+.step.todo b{color:var(--ink-3);font-weight:500}
+.step p{font-size:13px;color:var(--ink-3);margin-top:4px;max-width:56ch;line-height:1.55}
+.step .law{font-size:11px;font-weight:600;color:var(--gold);margin-top:5px;display:inline-block;background:var(--gold-wash);padding:2px 8px;border-radius:6px}
+
+/* ---------- activity ledger ---------- */
+.ledger{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-sm)}
+.entry{display:grid;grid-template-columns:70px 1fr;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.5}
+.entry:last-child{border-bottom:none}
+.entry time{font-size:12px;color:var(--ink-3);font-weight:600}
+
+/* ---------- grounds (can / cannot) ---------- */
+.grounds{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.ground{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--shadow-sm)}
+.ground.can{border-top:3px solid var(--alert)}
+.ground.cant{border-top:3px solid var(--leased)}
+.ground h4{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;margin-bottom:14px}
+.ground.can h4{color:var(--alert)} .ground.cant h4{color:var(--leased)}
+.ground ul{list-style:none;display:grid;gap:12px}
+.ground li{font-size:13.5px;padding-left:26px;position:relative;color:var(--ink-2);line-height:1.5}
+.ground li::before{position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+.ground.can li::before{content:"\2715";background:var(--alert)}
+.ground.cant li::before{content:"\2713";background:var(--leased)}
+.ground li em{font-style:normal;font-size:11.5px;color:var(--gold);display:block;margin-top:3px;font-weight:600}
+
+/* ---------- warn box ---------- */
+.warnbox{background:var(--accent-wash);border:1px solid #FFD9D4;border-radius:var(--r);padding:18px 22px;margin-top:16px}
+.warnbox h4{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.warnbox h4::before{content:"";width:16px;height:16px;border-radius:50%;background:var(--accent);flex-shrink:0;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L1 21h22L12 2zm0 6v6m0 3v.5' stroke='black' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L1 21h22L12 2zm0 6v6m0 3v.5' stroke='black' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.warnbox p{font-size:13.5px;color:var(--ink-2);max-width:78ch;line-height:1.6}
+.warnbox p + p{margin-top:9px}
+
+/* ---------- move-in tasks ---------- */
+.tasks{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-sm)}
+.task{display:grid;grid-template-columns:40px 1fr auto;gap:16px;padding:18px 20px;border-bottom:1px solid var(--line);align-items:center}
+.task:last-child{border-bottom:none}
+.task.locked{opacity:.5}
+.tnum{font-size:14px;font-weight:700;color:var(--ink-3);border:2px solid var(--line);width:34px;height:34px;border-radius:50%;display:grid;place-items:center}
+.task.done .tnum{background:var(--leased);border-color:var(--leased);color:#fff}
+.task.now .tnum{border-color:var(--pending);color:var(--pending)}
+.task b{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.01em}
+.task p{font-size:13px;color:var(--ink-3);margin-top:3px;max-width:56ch;line-height:1.5}
+.task .law{font-size:11px;font-weight:600;color:var(--gold);margin-top:5px;display:inline-block;background:var(--gold-wash);padding:2px 8px;border-radius:6px}
+
+/* ---------- breakdown ---------- */
+.breakdown{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:14px 0;box-shadow:var(--shadow-sm)}
+.brow{display:flex;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--line);font-size:14px;gap:12px}
+.brow:last-child{border-bottom:none}
+.brow.total{background:var(--paper);font-weight:700}
+.brow span:last-child{font-weight:600;white-space:nowrap}
+.brow.capped{color:var(--leased)}
+.brow.total span:last-child{font-family:'Fraunces',serif;font-size:17px}
+
+/* ---------- keycard ---------- */
+.keycard{border-radius:var(--r-lg);background:linear-gradient(145deg,#1B2430,#0E1620);color:#fff;padding:28px;position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.keycard::after{content:"";position:absolute;right:-50px;top:-50px;width:200px;height:200px;border:1px solid rgba(255,255,255,.1);border-radius:50%}
+.keycard::before{content:"";position:absolute;right:-90px;bottom:-90px;width:220px;height:220px;border:1px solid rgba(255,90,77,.18);border-radius:50%}
+.keycard i{font-style:normal;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.keycard b{display:block;font-family:'Fraunces',serif;font-weight:600;font-size:24px;letter-spacing:-.02em;margin:8px 0 4px}
+.keycard .code{font-family:'Fraunces',serif;font-size:34px;letter-spacing:.14em;margin:18px 0 6px;font-weight:600;color:#fff}
+.keycard p{font-size:13px;color:rgba(255,255,255,.62);max-width:46ch;margin-top:12px;line-height:1.55}
+
+/* ---------- adverse action ---------- */
+.aan{background:var(--card);border:1px solid #FFD9D4;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.aan-head{background:var(--accent-wash);padding:18px 22px;border-bottom:1px solid #FFD9D4}
+.aan-head b{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--accent-ink)}
+.aan-head h3{font-family:'Fraunces',serif;font-weight:600;font-size:20px;margin-top:6px;letter-spacing:-.02em}
+.aan-body{padding:22px}
+.aan-body p{font-size:13.5px;color:var(--ink-2);margin-bottom:11px;max-width:74ch;line-height:1.6}
+
+/* ---------- prequal ---------- */
+.prequal{background:linear-gradient(160deg,var(--card),var(--paper));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.prequal-in{padding:26px}
+.prequal h3{font-family:'Fraunces',serif;font-weight:600;font-size:22px;letter-spacing:-.02em}
+.prequal p{font-size:14px;color:var(--ink-3);margin-top:6px;max-width:66ch;line-height:1.6}
+.qres{background:var(--card);border:1px solid var(--line);border-radius:var(--r);border-left:4px solid;padding:18px 20px;margin-top:18px;animation:rise .3s ease both;box-shadow:var(--shadow-sm)}
+.qres.pass{border-left-color:var(--leased)}
+.qres.fail{border-left-color:var(--pending)}
+.qres > b{font-family:'Fraunces',serif;font-size:19px;letter-spacing:-.02em;display:block;margin-bottom:12px}
+.qres.pass > b{color:var(--leased)} .qres.fail > b{color:var(--pending)}
+.qline{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;padding:8px 0;border-bottom:1px solid var(--line)}
+.qline span:last-child{font-weight:600}
+.qres p{font-size:13.5px;color:var(--ink-2);margin-top:12px;max-width:70ch;line-height:1.6}
+
+/* ---------- deposit meter ---------- */
+.meter{background:linear-gradient(160deg,#0E9F6E0D,var(--card));border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;box-shadow:var(--shadow-sm)}
+.meter-head{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.meter-head i{font-style:normal;font-size:11px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-3);display:block}
+.meter-head b{font-family:'Fraunces',serif;font-size:30px;font-weight:600;letter-spacing:-.02em;display:block;margin-top:5px}
+.meter-head b.good{color:var(--leased)}
+.bar{height:10px;background:var(--line);border-radius:999px;margin:18px 0 14px;overflow:hidden}
+.bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--leased),#34D399);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.meter-note{font-size:13px;color:var(--ink-3);max-width:70ch;line-height:1.55}
+.items{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:14px;box-shadow:var(--shadow-sm)}
+.item{padding:18px 22px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:none}
+.item-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.item b{font-size:14.5px;font-weight:700;letter-spacing:-.01em}
+.life{height:6px;background:var(--line);border-radius:999px;margin:12px 0 9px;overflow:hidden}
+.life-fill{height:100%;border-radius:999px;background:var(--vacant)}
+.life-fill.dead{background:var(--leased)}
+.item p{font-size:13px;color:var(--ink-3);max-width:74ch;line-height:1.55}
+.queue{background:#EFF4FF;border:1px solid #DBE7FF;border-radius:var(--r-sm);padding:12px 16px;margin-top:14px;font-size:13px;color:var(--ink-2);max-width:72ch;line-height:1.55}
+.queue b{color:var(--vacant)}
+.rentrep{background:var(--gold-wash);border:1px solid #EFE2C8;border-radius:var(--r);padding:20px 24px;display:flex;gap:18px;justify-content:space-between;align-items:flex-start;margin-top:14px}
+.rentrep b{font-size:15px;display:block;font-weight:700;letter-spacing:-.01em}
+.rentrep p{font-size:13px;color:var(--ink-2);margin-top:5px;max-width:72ch;line-height:1.55}
+
+/* ---------- note ---------- */
+.note{background:var(--gold-wash);border-radius:var(--r);padding:16px 20px;font-size:13.5px;color:var(--ink-2);margin-top:16px;max-width:74ch;line-height:1.6}
+.note b{color:var(--gold);font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;display:block;margin-bottom:6px}
+
+.empty{padding:44px 24px;text-align:center;color:var(--ink-3);border:2px dashed var(--line);border-radius:var(--r-lg);background:var(--card);font-size:14.5px}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);
+  background:var(--ink);color:#fff;padding:14px 22px;border-radius:999px;font-size:14px;font-weight:600;z-index:80;
+  animation:toastin .3s cubic-bezier(.2,.8,.2,1) both;max-width:90vw;box-shadow:var(--shadow-lg)}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* ---------- sheet / modal ---------- */
+.sheet{position:fixed;inset:0;background:rgba(20,26,34,.5);backdrop-filter:blur(4px);z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+.sheet-in{background:var(--card);border-radius:var(--r-lg);max-width:600px;width:100%;animation:sheetin .3s cubic-bezier(.2,.8,.2,1) both;box-shadow:var(--shadow-lg);overflow:hidden}
+@keyframes sheetin{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+.sheet-head{padding:24px 26px;border-bottom:1px solid var(--line)}
+.sheet-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:23px;letter-spacing:-.02em}
+.sheet-head p{font-size:13.5px;color:var(--ink-3);margin-top:6px}
+.sheet-body{padding:24px 26px;display:grid;gap:17px}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:var(--r-sm);transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-wash)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.consent{background:var(--gold-wash);border:1px solid #EFE2C8;border-radius:var(--r-sm);padding:15px 17px;display:flex;gap:12px;align-items:flex-start}
+.consent input{margin-top:3px;flex-shrink:0;width:17px;height:17px;accent-color:var(--accent)}
+.consent label{letter-spacing:0;text-transform:none;color:var(--ink-2);margin:0;font-size:12.5px;line-height:1.55;font-weight:400}
+.sheet-foot{padding:18px 26px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;background:var(--paper)}
+.opt{border:1.5px solid var(--line);border-radius:var(--r-sm);padding:15px 17px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--ink-3)}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-wash)}
+.opt input{margin-top:3px;accent-color:var(--accent);width:17px;height:17px;flex-shrink:0}
+.opt b{display:block;font-size:14px;font-weight:700}
+.opt p{font-size:12.5px;color:var(--ink-3);margin-top:3px;line-height:1.5}
+
+.back{font-size:13px;font-weight:600;color:var(--ink-3);margin-bottom:16px;display:inline-flex;align-items:center;gap:6px;transition:color .15s}
+.back:hover{color:var(--ink)}
+.split{display:grid;grid-template-columns:1fr 350px;gap:28px;align-items:start}
+
+@media(max-width:640px){
+  .btn{padding:13px 20px}
+  .role{padding:10px 14px;font-size:12.5px}
+  .masthead-in{gap:14px;padding-left:18px;padding-right:18px}
+  .shell{padding-top:24px}
+  .entry{grid-template-columns:60px 1fr;gap:10px}
+  .meter-head b{font-size:25px}
+  h1.page{font-size:29px}
+}
+@media(max-width:860px){
+  .split,.two,.grounds{grid-template-columns:1fr}
+  .roles{margin-left:0;width:100%;justify-content:space-between}
+  .role{flex:1;text-align:center}
+  .whoami{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="wordmark">Milton's Properties <span>Portfolio Desk</span></div>
+    <div class="roles" role="group" aria-label="Switch role">
+      <button class="role" data-role="owner">Owner</button>
+      <button class="role" data-role="agent">Realtor</button>
+      <button class="role" data-role="renter">Renter</button>
+      <button class="role" data-role="buyer">Buyer</button>
+    </div>
+    <div class="whoami" id="whoami"></div>
+  </div>
+</header>
+
+<main class="shell" id="app"></main>
+<div id="overlay"></div>
+
+<script>
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const uid = () => Math.random().toString(36).slice(2,8).toUpperCase();
+
+const S = {
+  role:'owner', view:'browse', focus:null,
+  ownerIsSmallLandlord:false,
+  properties:[
+    {id:'MP-1042',addr:'1180 Ocean Ave',unit:'Unit 4B',type:'Condo',beds:2,baths:1,sqft:940,rent:3450,status:'leased',tenant:'D. Ferreira',leaseEnd:'2027-03-31',hue:206},
+    {id:'MP-1043',addr:'1180 Ocean Ave',unit:'Unit 5A',type:'Condo',beds:1,baths:1,sqft:680,rent:2800,status:'vacant',tenant:null,leaseEnd:null,hue:206},
+    {id:'MP-2210',addr:'47 Burrows St',unit:null,type:'Single family',beds:3,baths:2,sqft:1620,rent:5200,price:1385000,status:'pending',tenant:null,leaseEnd:null,hue:28},
+    {id:'MP-3301',addr:'900 Geneva Ave',unit:'Unit 12',type:'Apartment',beds:2,baths:1,sqft:875,rent:3150,status:'leased',tenant:'A. Okonkwo',leaseEnd:'2026-08-15',hue:158},
+    {id:'MP-3302',addr:'900 Geneva Ave',unit:'Unit 14',type:'Apartment',beds:1,baths:1,sqft:610,rent:2650,status:'vacant',tenant:null,leaseEnd:null,hue:158},
+    {id:'MP-4405',addr:'2255 Taraval St',unit:null,type:'Duplex',beds:4,baths:3,sqft:2100,rent:6400,price:1750000,status:'leased',tenant:'M. Whitfield',leaseEnd:'2026-08-01',hue:340}
+  ],
+  requests:[
+    {id:'RQ-'+uid(),propId:'MP-2210',kind:'sale',agent:'R. Castellano',party:'The Nguyen Family Trust',amount:1385000,terms:'Cash, 21-day close, no financing contingency',note:'Inspection waived. Proof of funds on file.',status:'pending',at:'09:14'}
+  ],
+  applications:[],
+  tenancy:{propId:'MP-1042',tenant:'D. Ferreira',movedIn:'April 2025',deposit:3450,rentReporting:true,
+    items:[
+      {name:'Carpet, living room and bedroom',installed:2019,life:8,cost:2400,charge:0,note:'Move-in photos show traffic wear already present. Nothing added since.'},
+      {name:'Interior paint',installed:2023,life:5,cost:1800,charge:0,note:'Two nail holes logged at your March inspection. Holes are normal wear, not damage.'},
+      {name:'Kitchen wall, north side',installed:2023,life:5,cost:1800,charge:145,note:'Four-inch gouge you reported yourself in March 2026. Patch and paint quoted at $240.'},
+      {name:'Dishwasher',installed:2020,life:10,cost:900,charge:0,note:'Failed pump replaced under warranty February 2026. Landlord expense.'},
+      {name:'Refrigerator',installed:2016,life:12,cost:1600,charge:0,note:'Running fine, but it aged out of chargeable life this year.'}
+    ]},
+  activity:[
+    {t:'09:14',s:'R. Castellano submitted a sale for 47 Burrows St — waiting on you'},
+    {t:'08:52',s:'Rent posted: 900 Geneva Ave Unit 12 — $3,150 cleared'},
+    {t:'Jul 21',s:'Lease at 2255 Taraval St expires in 8 days'}
+  ]
+};
+
+const STAGES=[
+ {b:'Application received',p:'Timestamped, so applications are worked in the order they arrive.',law:'Civ. Code 1950.6 (AB 2493)'},
+ {b:'Criteria disclosed and acknowledged',p:'You saw the exact standards before paying anything.',law:'AB 2493 — criteria precede the fee'},
+ {b:'Authorization signed',p:'Nothing is ordered until your written consent is on file.',law:'FCRA 604'},
+ {b:'Financial screening runs',p:'Credit, income and eviction history only. No criminal record is requested at this stage.',law:'SF Police Code 49'},
+ {b:'Conditional offer issued',p:'The unit is held for you, subject to the remaining review.',law:'Fair Chance sequencing'},
+ {b:'Individualized review',p:'If anything surfaces, a person reads it in context. Never an automatic no.',law:'HUD disparate-impact guidance'},
+ {b:'Decision recorded',p:'Approval, or a written notice explaining the denial and your right to dispute it.',law:'FCRA 615(a)'}
+];
+
+const CAN=[
+ {t:'Income below the posted multiple',l:'2.5x monthly rent, applied to everyone identically'},
+ {t:'Credit score below the posted minimum',l:'640, disclosed before you pay'},
+ {t:'An unlawful detainer judgment in the last 3 years',l:'Judgments only, not dismissed filings'},
+ {t:'Materially false information on the application',l:'Identity or income that will not verify'},
+ {t:'A conviction — only after a conditional offer, only after individual review',l:'SF Police Code 49: you respond first'}
+];
+const CANT=[
+ {t:'Race, color, religion, sex, national origin, disability, family status',l:'Fair Housing Act'},
+ {t:'Source of income, including Section 8 and VA housing vouchers',l:'Cal. Gov. Code 12955'},
+ {t:'Arrests without conviction, or sealed, expunged and juvenile records',l:'SF Police Code 49'},
+ {t:'Any criminal history asked for before a conditional offer',l:'Not on the application form at all'},
+ {t:'A blanket rule auto-rejecting anyone with a record',l:'HUD disparate impact'},
+ {t:'Refusing your portable screening report under 30 days old',l:'AB 2559'}
+];
+
+const prop=id=>S.properties.find(p=>p.id===id);
+const label=p=>p.addr+(p.unit?' \u00B7 '+p.unit:'');
+const depositCap=(p,sm)=>p.rent*((S.ownerIsSmallLandlord&&!sm)?2:1);
+
+function facade(p){
+  const h=p.hue;
+  // layered sky gradient + soft sun glow, dimensional building, warm-lit windows
+  let win='';
+  for(let r=0;r<3;r++)for(let c=0;c<5;c++){
+    const lit=(r*5+c+p.id.charCodeAt(4))%3===0;
+    win+='<rect x="'+(30+c*29)+'" y="'+(60+r*27)+'" width="17" height="19" rx="1.5" fill="'+(lit?'url(#lit'+h+')':'hsl('+h+',24%,30%)')+'"/>';
+  }
+  return '<div class="facade-wrap"><svg class="facade" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+
+    '<defs>'+
+      '<linearGradient id="sky'+h+'" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="hsl('+h+',38%,90%)"/><stop offset="1" stop-color="hsl('+((h+18)%360)+',30%,80%)"/></linearGradient>'+
+      '<linearGradient id="bld'+h+'" x1="0" y1="0" x2="1" y2="1">'+
+        '<stop offset="0" stop-color="hsl('+h+',30%,52%)"/><stop offset="1" stop-color="hsl('+h+',34%,40%)"/></linearGradient>'+
+      '<radialGradient id="lit'+h+'" cx=".4" cy=".3" r="1">'+
+        '<stop offset="0" stop-color="#FFE9B8"/><stop offset="1" stop-color="#F2C868"/></radialGradient>'+
+      '<radialGradient id="sun'+h+'" cx=".5" cy=".5" r=".5">'+
+        '<stop offset="0" stop-color="hsl('+((h+40)%360)+',80%,86%)" stop-opacity=".9"/><stop offset="1" stop-color="hsl('+h+',40%,88%)" stop-opacity="0"/></radialGradient>'+
+    '</defs>'+
+    '<rect width="200" height="200" fill="url(#sky'+h+')"/>'+
+    '<circle cx="158" cy="42" r="46" fill="url(#sun'+h+')"/>'+
+    '<path d="M0 200 L0 46 L100 14 L200 46 L200 200 Z" fill="url(#bld'+h+')"/>'+
+    '<path d="M0 46 L100 14 L200 46 L200 55 L100 23 L0 55 Z" fill="hsl('+h+',34%,32%)"/>'+
+    '<path d="M100 14 L200 46 L200 55 L100 23 Z" fill="hsl('+h+',30%,28%)" opacity=".5"/>'+
+    win+
+    '<rect x="86" y="150" width="30" height="50" rx="2" fill="hsl('+h+',36%,24%)"/>'+
+    '<circle cx="110" cy="176" r="2" fill="hsl('+h+',40%,70%)"/>'+
+    '</svg></div>';
+}
+function cardMedia(p,badge){
+  const heart='<button class="facade-fav" aria-label="Save" onclick="event.stopPropagation();this.classList.toggle(\'on\');this.style.color=this.classList.contains(\'on\')?\'var(--accent)\':\'\';toast(this.classList.contains(\'on\')?\'Saved to your favorites.\':\'Removed from favorites.\')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></button>';
+  const b=badge?'<div class="facade-badge">'+badge+'</div>':'';
+  return facade(p).replace('</svg></div>','</svg>'+b+heart+'</div>');
+}
+function statusClass(p){
+  if(p.status==='leased'&&p.leaseEnd&&new Date(p.leaseEnd)-new Date('2026-07-24')<45*864e5)return 'alert';
+  return p.status;
+}
+const statusWord=p=>({alert:'Lease ending',leased:'Leased',vacant:'Vacant',pending:'In escrow'})[statusClass(p)];
+
+/* ================= OWNER ================= */
+function ownerView(){
+  const pending=S.requests.filter(r=>r.status==='pending');
+  const occ=S.properties.filter(p=>p.status==='leased').length;
+  const roll=S.properties.filter(p=>p.status==='leased').reduce((a,p)=>a+p.rent,0);
+  return `
+  <div class="eyebrow">Owner desk &middot; Milton Reyes</div>
+  <h1 class="page">Everything you own, and everything waiting on you.</h1>
+  <p class="sub">Your realtor moves the deal. You hold the last signature. Nothing closes, leases or changes price without landing here first.</p>
+  <div class="strip">
+    <div class="stat"><b>${S.properties.length}</b><i>Doors owned</i></div>
+    <div class="stat"><b>${occ}</b><i>Occupied</i></div>
+    <div class="stat"><b>${S.properties.length-occ}</b><i>Open</i></div>
+    <div class="stat"><b>${money(roll)}</b><i>Monthly rent roll</i></div>
+    <div class="stat ${pending.length?'hot':''}"><b>${pending.length}</b><i>Needs you</i></div>
+  </div>
+  <section class="section">
+    <div class="eyebrow">Waiting on your decision</div>
+    <div class="decisions">${pending.length?pending.map(decisionCard).join(''):'<div class="empty">Nothing pending. Submitted sales and leases land here with full terms.</div>'}</div>
+  </section>
+  <section class="section split">
+    <div><div class="eyebrow">Portfolio</div><div class="rows">
+      ${S.properties.map(p=>`<div class="row"><div class="rail ${statusClass(p)}"></div>
+        <div class="row-body"><div class="addr">${label(p)}</div>
+          <div class="meta"><span>${p.id}</span><span>${p.type}</span><span>${p.beds}bd / ${p.baths}ba</span>${p.tenant?'<span>'+p.tenant+'</span>':''}</div></div>
+        <div class="row-side"><div class="money">${money(p.rent)}<span style="font-size:11px;color:var(--ink-3)">/mo</span></div>
+          <span class="tag ${statusClass(p)}">${statusWord(p)}</span></div></div>`).join('')}
+    </div></div>
+    <div><div class="eyebrow">Activity</div><div class="ledger">
+      ${S.activity.slice(0,9).map(a=>`<div class="entry"><time>${a.t}</time><span>${a.s}</span></div>`).join('')}
+    </div>
+    <div class="note"><b>Deposit cap in force</b>You hold six doors under an LLC, so the one-month cap applies to you. The move-in screen will not collect a deposit above one month's rent, and it drops to one month automatically for any service-member applicant.</div>
+    </div>
+  </section>`;
+}
+
+function decisionCard(r){
+  const p=prop(r.propId),sale=r.kind==='sale';
+  return `<div class="decision"><div class="rail"></div><div class="decision-in">
+    <div class="kind">${sale?'Purchase offer':'Lease approval'} &middot; submitted ${r.at}</div>
+    <h3>${label(p)}</h3><div class="meta">${r.id} &middot; ${r.agent}</div>
+    <div class="terms">
+      <div class="term"><i>${sale?'Buyer':'Applicant'}</i><b>${r.party}</b></div>
+      <div class="term"><i>${sale?'Offer':'Monthly rent'}</i><b>${money(r.amount)}</b></div>
+      <div class="term"><i>Property</i><b>${p.id}</b></div>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:6px"><strong>Terms.</strong> ${r.terms}</p>
+    ${r.note?'<p style="font-size:13px;color:var(--ink-3);margin-bottom:14px">'+r.note+'</p>':''}
+    ${r.kind==='lease'?'<div class="note" style="margin:0 0 14px"><b>Before you decline</b>Declining on anything that came out of a report triggers an adverse action notice. Milton\'s writes and sends it for you — but the reason has to be one of your posted criteria, applied the same way you applied it to everyone else.</div>':''}
+    <div class="actions">
+      <button class="btn approve" onclick="decide('${r.id}','approved')">Approve</button>
+      <button class="btn decline" onclick="decide('${r.id}','declined')">Decline</button>
+      <button class="btn ghost" onclick="toast('Question sent to ${r.agent}.')">Ask a question</button>
+    </div></div></div>`;
+}
+
+/* ================= REALTOR ================= */
+function agentView(){
+  return `
+  <div class="eyebrow">Realtor desk &middot; R. Castellano</div>
+  <h1 class="page">Submit it once. The owner decides from their phone.</h1>
+  <p class="sub">Pick the property, fill the terms, send. Milton gets a push notification with everything you entered and two buttons.</p>
+  <section class="section"><div class="eyebrow">Assigned properties</div><div class="grid">
+    ${S.properties.map(p=>`<div class="listing">${cardMedia(p,statusWord(p))}<div class="listing-in">
+      <h3>${label(p)}</h3><div class="meta"><span>${p.id}</span><span>${statusWord(p)}</span></div>
+      <div class="actions"><button class="btn approve" onclick="openForm('${p.id}')">Start a transaction</button></div>
+    </div></div>`).join('')}
+  </div></section>
+  <section class="section"><div class="eyebrow">Submitted</div><div class="rows">
+    ${S.requests.length?S.requests.map(r=>{
+      const p=prop(r.propId),c=r.status==='pending'?'pending':r.status==='approved'?'leased':'alert';
+      return `<div class="row"><div class="rail ${c}"></div>
+        <div class="row-body"><div class="addr">${label(p)}</div>
+        <div class="meta"><span>${r.id}</span><span>${r.kind==='sale'?'Purchase':'Lease'}</span><span>${r.party}</span></div></div>
+        <div class="row-side"><div class="money">${money(r.amount)}</div>
+        <span class="tag ${c}">${r.status==='pending'?'Awaiting owner':r.status}</span></div></div>`}).join(''):'<div class="empty">Nothing submitted yet.</div>'}
+  </div></section>`;
+}
+
+/* ================= RENTER ================= */
+function renterView(){
+  if(S.view==='disclose') return discloseView(prop(S.focus));
+  if(S.view==='movein')  return moveinView(S.applications.find(a=>a.id===S.focus));
+  const open=S.properties.filter(p=>p.status==='vacant');
+  return `
+  <div class="eyebrow">Renter &middot; Teresa Alvarez</div>
+  <h1 class="page">Apply once. See exactly where you stand.</h1>
+  <p class="sub">One application, one capped fee, and a status you can actually read — including what can and cannot be held against you.</p>
+  <section class="section"><div class="eyebrow">Open units</div><div class="grid">
+    ${open.length?open.map(p=>`<div class="listing">${cardMedia(p,'For rent')}<div class="listing-in">
+      <h3>${label(p)}</h3><div class="meta"><span>${p.beds}bd / ${p.baths}ba</span><span>${p.sqft.toLocaleString()} sqft</span></div>
+      <div class="money" style="margin:4px 0">${money(p.rent)}<span style="font-size:11px;color:var(--ink-3)">/mo</span></div>
+      <div class="actions"><button class="btn approve" onclick="go('disclose','${p.id}')">Read the criteria first</button></div>
+    </div></div>`).join(''):'<div class="empty">Every unit is taken right now.</div>'}
+  </div></section>
+  <section class="section">
+    <div class="eyebrow">Your current tenancy</div>
+    ${depositMeter(S.tenancy)}
+    <div class="rentrep">
+      <div><b>Rent reporting is on, and it is free</b>
+      <p>Every on-time payment goes to the bureaus. Renters in a national pilot gained an average of 23 points. Late and missed payments are reported too &mdash; that is the deal, and we say it out loud. You can switch it off any time, though the bureaus will not take you back for six months.</p></div>
+      <div><span class="tag leased">Reporting</span></div>
+    </div>
+  </section>
+  ${S.applications.length?`<section class="section split">
+    <div><div class="eyebrow">Your applications</div>${S.applications.map(appCard).join('')}</div>
+    <div><div class="eyebrow">Your rights, plainly</div>
+      <div class="note"><b>Portable reports</b>Already hold a screening report under 30 days old? Milton's has to take it and cannot charge you for another. <span class="mono" style="font-size:10.5px">AB 2559</span></div>
+      <div class="note"><b>Fee cap</b>The fee is capped near $66 and can only cover what screening actually costs. Anything unused comes back within 7 days. <span class="mono" style="font-size:10.5px">Civ. Code 1950.6</span></div>
+      <div class="note"><b>Your report, automatically</b>A copy of every report pulled on you arrives within 7 days, approved or not. <span class="mono" style="font-size:10.5px">AB 2493</span></div>
+    </div></section>`:''}`;
+}
+
+function appCard(a){
+  const p=prop(a.propId);
+  if(a.decision==='declined') return adverseNotice(a,p);
+  return `<div class="pipe" style="margin-bottom:14px">
+    <h3>${label(p)}</h3><div class="meta">${a.id} &middot; applied ${a.at} &middot; ${money(p.rent)}/mo</div>
+    <div class="queue"><b>You are applicant #1 of 3 on this unit.</b> Applications are worked strictly in the order received. Nobody behind you can be moved ahead, and if you qualify first the unit is yours.</div>
+    <div class="steps">${STAGES.map((s,i)=>{
+      const cls=a.decision==='approved'?'done':i<a.stage?'done':i===a.stage?'now':'todo';
+      return `<div class="step ${cls}"><b>${s.b}</b><p>${s.p}</p><span class="law">${s.law}</span></div>`}).join('')}</div>
+    ${a.decision==='approved'?`<div class="actions" style="margin-top:18px">
+      <button class="btn approve" onclick="go('movein','${a.id}')">Start move-in</button></div>`:''}
+    ${(a.stage>=4&&!a.decision)?`<div class="warnbox" style="margin-top:16px">
+      <h4>Conditional offer &mdash; Fair Chance notice</h4>
+      <p>The unit is being held for you. Only now can criminal history be looked at, and only through an individualized review: the specific offense, how long ago it happened, and anything you want to submit about your circumstances since. Arrests without conviction, and sealed, expunged or juvenile records cannot be considered at all.</p>
+      <p>If something surfaces, you get written notice and a real chance to respond before any decision is made. <span class="mono" style="font-size:11px">SF Police Code 49</span></p>
+    </div>`:''}
+    ${(a.stage>=3&&!a.decision)?`<div class="actions" style="margin-top:14px">
+      <button class="btn ghost" onclick="toast('Report copy emailed. You have 60 days to dispute anything in it.')">Get my report copy</button></div>`:''}
+  </div>`;
+}
+
+function adverseNotice(a,p){
+  return `<div class="aan" style="margin-bottom:14px">
+    <div class="aan-head"><b>Adverse action notice &middot; ${a.id}</b><h3>${label(p)} &mdash; application denied</h3></div>
+    <div class="aan-body">
+      <p><strong>Why.</strong> Verified income of ${money(a.income)} per year did not meet the posted requirement of 2.5&times; monthly rent. This is the criterion you were shown before you applied, and it is applied identically to every applicant.</p>
+      <p><strong>Who supplied the report.</strong> SingleKey Screening Services &middot; 1-800-555-0100 &middot; disputes@example.com</p>
+      <p><strong>They did not make this decision.</strong> The reporting agency supplied information only. Milton's Properties made the decision and cannot explain the specific contents of your file.</p>
+      <p><strong>What you can do.</strong> You may obtain a free copy of the report from that agency within 60 days, and dispute anything inaccurate or incomplete directly with them. You may also add a personal statement to your file.</p>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn ghost" onclick="toast('Notice re-sent by email and first-class mail.')">Send me a copy</button>
+        <button class="btn ghost" onclick="toast('Dispute opened. Milton&rsquo;s re-reviews automatically on updated data.')">Dispute this</button>
+      </div>
+    </div></div>`;
+}
+
+/* ---- disclosure gate ---- */
+function discloseView(p){
+  const cap=depositCap(p,false);
+  return `
+  <button class="back" onclick="go('browse')">&larr; All units</button>
+  <div class="eyebrow">Before you apply &middot; ${p.id}</div>
+  <h1 class="page">${label(p)}</h1>
+  <p class="sub">These are the exact standards this unit is judged by. You are seeing them before any fee is charged, which is how California requires it. Read them, then decide whether to spend the money.</p>
+  <div class="strip">
+    <div class="stat"><b>${money(p.rent)}</b><i>Monthly rent</i></div>
+    <div class="stat"><b>${money(p.rent*2.5)}</b><i>Income needed / mo</i></div>
+    <div class="stat"><b>640</b><i>Minimum credit</i></div>
+    <div class="stat"><b>$66</b><i>Application fee</i></div>
+    <div class="stat"><b>${money(cap)}</b><i>Max deposit</i></div>
+  </div>
+  <section class="section">
+    <div class="eyebrow">What can and cannot be held against you</div>
+    <div class="grounds">
+      <div class="ground can"><h4>You can be denied for</h4><ul>${CAN.map(x=>'<li>'+x.t+'<em>'+x.l+'</em></li>').join('')}</ul></div>
+      <div class="ground cant"><h4>You cannot be denied for</h4><ul>${CANT.map(x=>'<li>'+x.t+'<em>'+x.l+'</em></li>').join('')}</ul></div>
+    </div>
+    <div class="warnbox">
+      <h4>Read this before you pay</h4>
+      <p>Submitting an application authorizes a consumer report covering credit, income and eviction history. Meeting every criterion above does not guarantee the unit: applications are worked in the order received and the first qualified applicant is approved. If someone ahead of you qualifies first, yours is declined and your fee refunded within seven days.</p>
+      <p>If you are denied for any reason connected to a report, you receive a written adverse action notice naming the agency and explaining how to get a free copy and dispute it. If you believe a denial was discriminatory, you can file with the California Civil Rights Department or HUD at no cost.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="eyebrow">Check before you pay &mdash; free</div>
+    <div class="prequal">
+      <div class="prequal-in">
+        <h3>Would you qualify?</h3>
+        <p>Two numbers, checked against the criteria above. No fee, no credit inquiry, no report ordered, nothing recorded against you. This is arithmetic, not an application.</p>
+        <div class="two" style="margin-top:14px">
+          <div class="field"><label for="q-inc">Your annual income</label><input id="q-inc" class="mono" type="number" placeholder="95000"></div>
+          <div class="field"><label for="q-cr">Your credit, roughly</label>
+            <select id="q-cr"><option value="760">Excellent (740+)</option><option value="690">Good (670&ndash;739)</option><option value="650">Fair (640&ndash;669)</option><option value="600">Below 640</option><option value="0">No credit history</option></select></div>
+        </div>
+        <div class="actions" style="margin-top:4px">
+          <button class="btn approve" onclick="prequal('${p.id}')">Check me</button>
+        </div>
+        <div id="q-out"></div>
+      </div>
+    </div>
+  </section>
+  <section class="section"><div class="actions">
+    <button class="btn approve" onclick="openApply('${p.id}')">I have read this &mdash; apply</button>
+    <button class="btn ghost" onclick="toast('Criteria emailed to you as a dated PDF.')">Email me these criteria</button>
+    <button class="btn ghost" onclick="toast('Upload a report under 30 days old and the fee is waived.')">I have a portable report</button>
+  </div></section>`;
+}
+
+function prequal(pid){
+  const p=prop(pid);
+  const inc=+document.getElementById('q-inc').value||0;
+  const cr=+document.getElementById('q-cr').value;
+  const need=p.rent*12*2.5;
+  const okInc=inc>=need, okCr=cr>=640;
+  const out=document.getElementById('q-out');
+  if(!inc){out.innerHTML='<div class="note" style="margin-top:14px">Put in an income and I will check it.</div>';return}
+  const pass=okInc&&okCr;
+  out.innerHTML='<div class="qres '+(pass?'pass':'fail')+'">'+
+    '<b>'+(pass?'You meet the posted criteria.':'You would fall short today.')+'</b>'+
+    '<div class="qline"><span>Income</span><span>'+money(inc)+' vs '+money(need)+' needed &nbsp;'+(okInc?'&#10003;':'&#10007;')+'</span></div>'+
+    '<div class="qline"><span>Credit</span><span>'+(cr?cr+'':'none reported')+' vs 640 needed &nbsp;'+(okCr?'&#10003;':'&#10007;')+'</span></div>'+
+    '<p>'+(pass
+      ? 'Worth the $66. Applications are still worked in the order received, so applying sooner matters more than applying perfectly.'
+      : (!okInc&&inc>0 ? 'A co-applicant\u2019s income counts toward the same threshold. Adding one may close the gap \u2014 and it costs you nothing to find that out here first.'
+                       : 'A thin or missing credit file is not the same as bad credit. Twelve months of verified rent payments can substitute; ask before you pay the fee.'))+'</p>'+
+    '</div>';
+}
+
+/* ---- deposit meter ---- */
+function depositMeter(t){
+  const p=prop(t.propId);
+  const now=2026;
+  const atRisk=t.items.filter(i=>i.charge>0).reduce((a,i)=>a+i.charge,0);
+  const back=t.deposit-atRisk;
+  return `
+  <div class="eyebrow">Deposit meter &middot; ${label(p)}</div>
+  <div class="meter">
+    <div class="meter-head">
+      <div><i>Held on your behalf</i><b>${money(t.deposit)}</b></div>
+      <div style="text-align:right"><i>Returns to you today</i><b class="good">${money(back)}</b></div>
+    </div>
+    <div class="bar"><div class="bar-fill" style="width:${(back/t.deposit*100).toFixed(1)}%"></div></div>
+    <p class="meter-note">Moved in ${t.movedIn}. This updates every time something is inspected, repaired or reported. Nothing gets added at move-out that is not already showing here.</p>
+  </div>
+  <div class="items">
+    ${t.items.map(i=>{
+      const age=now-i.installed, spent=Math.min(age/i.life,1), dead=age>=i.life;
+      return `<div class="item">
+        <div class="item-top">
+          <div><b>${i.name}</b><div class="meta"><span>Installed ${i.installed}</span><span>${i.life}-year life</span><span>${money(i.cost)} to replace</span></div></div>
+          <div style="text-align:right">${i.charge>0
+            ? '<span class="tag alert">&minus;'+money(i.charge)+'</span>'
+            : dead ? '<span class="tag leased">Cannot be charged</span>' : '<span class="tag leased">Clear</span>'}</div>
+        </div>
+        <div class="life"><div class="life-fill${dead?' dead':''}" style="width:${(spent*100).toFixed(0)}%"></div></div>
+        <p>${dead
+          ? 'Past its useful life as of '+(i.installed+i.life)+'. It can be replaced, but not out of your deposit.'
+          : i.charge>0
+            ? i.note+' Charged at '+money(i.cost)+' &times; '+(100-Math.round(spent*100))+'% life remaining, not full replacement cost.'
+            : i.note}</p>
+      </div>`}).join('')}
+  </div>
+  <div class="note"><b>Why the math looks like this</b>A landlord cannot bill you replacement cost for something that was already most of the way through its life. Almost every deposit fight is that argument, held without numbers. These are the numbers, from the day you moved in.</div>`;
+}
+
+/* ---- buyer ---- */
+function buyerView(){
+  const forSale=S.properties.filter(p=>p.price);
+  if(S.view==='cost'){ return costSheet(prop(S.focus)); }
+  return `
+  <div class="eyebrow">Buyer &middot; J. Okafor</div>
+  <h1 class="page">The number that matters is not the asking price.</h1>
+  <p class="sub">Every listing here carries what it actually costs to own in year one &mdash; including the property tax reassessment that catches almost every California buyer.</p>
+  <section class="section"><div class="eyebrow">For sale</div><div class="grid">
+    ${forSale.map(p=>`<div class="listing">${cardMedia(p,'For sale')}<div class="listing-in">
+      <h3>${label(p)}</h3><div class="meta"><span>${p.beds}bd / ${p.baths}ba</span><span>${p.sqft.toLocaleString()} sqft</span></div>
+      <div class="money" style="margin:4px 0">${money(p.price)}</div>
+      <div class="actions"><button class="btn approve" onclick="go('cost','${p.id}')">See the true cost</button></div>
+    </div></div>`).join('')}
+  </div></section>`;
+}
+
+function costSheet(p){
+  const price=p.price, down=Math.round(price*0.20), loan=price-down;
+  const mo=Math.round(loan*(0.0665/12)/(1-Math.pow(1+0.0665/12,-360)));
+  const sellerTax=Math.round(p.price*0.34/100/12);
+  const newTax=Math.round(price*0.0118/12);
+  const ins=Math.round(price*0.0042/12), hoa=p.type==='Condo'?580:0;
+  const util=Math.round(p.sqft*0.18), maint=Math.round(price*0.01/12);
+  const total=mo+newTax+ins+hoa+util+maint;
+  const closing=Math.round(price*0.022);
+  return `
+  <button class="back" onclick="go('browse')">&larr; All listings</button>
+  <div class="eyebrow">True cost &middot; ${p.id}</div>
+  <h1 class="page">${label(p)}</h1>
+  <p class="sub">Asking ${money(price)}. Here is the monthly reality at 20% down and a 6.65% rate, and the cash you need in the first year.</p>
+
+  <section class="section split">
+    <div>
+      <div class="eyebrow">Monthly, all in</div>
+      <div class="breakdown">
+        <div class="brow"><span>Principal and interest</span><span>${money(mo)}</span></div>
+        <div class="brow"><span>Property tax &mdash; reassessed</span><span>${money(newTax)}</span></div>
+        <div class="brow"><span>Insurance</span><span>${money(ins)}</span></div>
+        ${hoa?'<div class="brow"><span>HOA dues</span><span>'+money(hoa)+'</span></div>':''}
+        <div class="brow"><span>Utilities, from this unit\u2019s bills</span><span>${money(util)}</span></div>
+        <div class="brow"><span>Maintenance reserve</span><span>${money(maint)}</span></div>
+        <div class="brow total"><span>Every month</span><span>${money(total)}</span></div>
+      </div>
+      <div class="warnbox">
+        <h4>The reassessment nobody mentions</h4>
+        <p>The seller pays about <strong>${money(sellerTax)}</strong> a month in property tax, because their basis was set when they bought. On close, the county reassesses at your purchase price and yours becomes roughly <strong>${money(newTax)}</strong> &mdash; ${Math.round(newTax/sellerTax)}&times; more. Listing sites quote the seller\u2019s number. That gap is ${money((newTax-sellerTax)*12)} in your first year.</p>
+      </div>
+      <div class="eyebrow" style="margin-top:30px">Cash in year one</div>
+      <div class="breakdown">
+        <div class="brow"><span>Down payment (20%)</span><span>${money(down)}</span></div>
+        <div class="brow"><span>Closing costs (~2.2%)</span><span>${money(closing)}</span></div>
+        <div class="brow"><span>Expected early repairs</span><span>${money(9000)}</span></div>
+        <div class="brow total"><span>Before you own anything</span><span>${money(down+closing+9000)}</span></div>
+      </div>
+      <div class="note"><b>Why early repairs are on this list</b>73% of buyers hit an unexpected expense within six months of closing, and 54% within ninety days. Budgeting zero for it is the most common way a comfortable purchase turns tight.</div>
+    </div>
+    <div>
+      <div class="eyebrow">Down payment options</div>
+      <div class="breakdown">
+        ${[3,10,20].map(pct=>{
+          const d=Math.round(price*pct/100), l=price-d;
+          const m2=Math.round(l*(0.0665/12)/(1-Math.pow(1+0.0665/12,-360)));
+          const pmi=pct<20?Math.round(l*0.0055/12):0;
+          return '<div class="brow"><span>'+pct+'% down &middot; '+money(d)+'</span><span>'+money(m2+pmi)+'/mo'+(pmi?' *':'')+'</span></div>';
+        }).join('')}
+      </div>
+      <p style="font-size:12px;color:var(--ink-3);margin-top:-4px">* includes mortgage insurance</p>
+      <div class="note"><b>You do not need 20%</b>13% of buyers did not know that, and about a fifth wish someone had told them about down payment assistance. Putting less down costs more monthly but gets you in years earlier.</div>
+      <div class="eyebrow" style="margin-top:28px">Honest timeline</div>
+      <div class="tasks">
+        ${[['Offer accepted','Day 0'],['Inspection window closes','Day 10'],['Appraisal returns','Day 18'],['Loan conditions cleared','Day 28'],['Funding and recording','Day 34']].map((s,i)=>
+          `<div class="task"><div class="tnum">${i+1}</div><div><b>${s[0]}</b><p>${s[1]}</p></div><div></div></div>`).join('')}
+      </div>
+      <div class="note"><b>Two weeks is not a thing</b>35% of buyers expect to close in two weeks. The real range is 30 to 40 days. Better to know that now than at day 25.</div>
+    </div>
+  </section>
+  <p class="sub" style="margin-top:26px;font-size:12.5px;color:var(--ink-3)">These are estimates built from public rates, this unit\u2019s actual utility history and standard county assessment ratios. They are disclosure, not financial advice. Your lender\u2019s Loan Estimate governs.</p>`;
+}
+
+/* ---- move-in ---- */
+function moveinView(a){
+  const p=prop(a.propId), m=a.movein;
+  const cap=depositCap(p,m.serviceMember);
+  const dep=Math.min(m.deposit,cap);
+  const capped=m.deposit>cap;
+  const T=[
+    {b:'Sign the lease',p:'Full terms, e-signed. The countersigned copy lands in your email immediately.',law:'',done:m.signed,
+     act:'<button class="btn approve" onclick="mv(\'signed\')">Read and sign</button>'},
+    {b:'Pay move-in funds',p:'First month plus deposit. Bank transfer, card, or mail a check — your choice.',law:'Civ. Code 1947.3',done:m.paid,
+     act:'<button class="btn approve" onclick="openPay(\''+a.id+'\')">Choose how to pay</button>'},
+    {b:'Photograph the unit',p:'Timestamped condition photos before you move a single box in. This is what protects your deposit.',law:'AB 2801',done:m.photos,
+     act:'<button class="btn approve" onclick="mv(\'photos\')">Upload walkthrough photos</button>'},
+    {b:'Get your keys',p:'A smart-lock code, plus a cut physical key waiting in the lockbox.',law:'',done:m.keys,
+     act:'<button class="btn approve" onclick="mv(\'keys\')">Release my access</button>'}
+  ];
+  const active=T.findIndex(t=>!t.done);
+  return `
+  <button class="back" onclick="go('browse')">&larr; Back</button>
+  <div class="eyebrow">Approved &middot; ${a.id}</div>
+  <h1 class="page">${label(p)} is yours. Four steps, none of them in person.</h1>
+  <p class="sub">Milton approved you ${a.approvedAt}. Work down the list — access releases the moment the funds clear and your photos are filed.</p>
+  <section class="section split">
+    <div>
+      <div class="eyebrow">Move-in checklist</div>
+      <div class="tasks">
+        ${T.map((t,i)=>`<div class="task ${t.done?'done':i===active?'now':'locked'}">
+          <div class="tnum">${t.done?'&#10003;':i+1}</div>
+          <div><b>${t.b}</b><p>${t.p}</p>${t.law?'<span class="law">'+t.law+'</span>':''}</div>
+          <div>${t.done?'<span class="tag leased">Done</span>':i===active?t.act:'<span class="tag">Locked</span>'}</div>
+        </div>`).join('')}
+      </div>
+      ${m.keys?`<div class="keycard" style="margin-top:20px">
+        <i>Door code &middot; ${label(p)}</i>
+        <b>You're in.</b>
+        <div class="code">${m.code}</div>
+        <i>Active from ${m.moveDate} &middot; expires with your lease</i>
+        <p>A cut physical key is in the entry lockbox, code ${m.code.slice(0,4)}. If your phone dies, the keypad code works on its own. Nobody had to meet you anywhere.</p>
+      </div>`:''}
+    </div>
+    <div>
+      <div class="eyebrow">Move-in funds</div>
+      <div class="breakdown">
+        <div class="brow"><span>First month's rent</span><span>${money(p.rent)}</span></div>
+        <div class="brow"><span>Security deposit</span><span>${money(dep)}</span></div>
+        ${capped?'<div class="brow capped"><span style="font-size:12px">Reduced to the legal cap</span><span style="font-size:12px">&minus;'+money(m.deposit-dep)+'</span></div>':''}
+        <div class="brow total"><span>Due at move-in</span><span>${money(p.rent+dep)}</span></div>
+      </div>
+      <label class="opt" style="margin-bottom:12px">
+        <input type="checkbox" ${m.serviceMember?'checked':''} onchange="toggleSM('${a.id}')">
+        <div><b>I am an active-duty service member</b><p>Hard-caps the deposit at one month's rent no matter who owns the building.</p></div>
+      </label>
+      <div class="note"><b>Why the deposit is capped</b>AB 12 limits deposits to one month's rent. The two-month exception reaches only natural persons holding two or fewer properties totalling four or fewer units, and it never reaches service members. Milton's holds six doors under an LLC, so one month is the ceiling and the field will not accept more. <span class="mono" style="font-size:10.5px">Civ. Code 1950.5</span></div>
+      <div class="note"><b>Why there is a mail-a-check option</b>California landlords cannot make an online portal the only way to pay. At least one method that is neither cash nor electronic transfer has to stay open, and you cannot be charged extra for using it. <span class="mono" style="font-size:10.5px">Civ. Code 1947.3</span></div>
+    </div>
+  </section>`;
+}
+
+function openPay(aid){
+  const a=S.applications.find(x=>x.id===aid),p=prop(a.propId);
+  const dep=Math.min(a.movein.deposit,depositCap(p,a.movein.serviceMember));
+  document.getElementById('overlay').innerHTML=`
+  <div class="sheet" onclick="if(event.target===this)closeSheet()"><div class="sheet-in" role="dialog" aria-modal="true">
+    <div class="sheet-head"><h2>Pay ${money(p.rent+dep)}</h2><p>${label(p)} &middot; first month plus deposit</p></div>
+    <div class="sheet-body">
+      <label class="opt"><input type="radio" name="pay" value="ach" checked>
+        <div><b>Bank transfer (ACH)</b><p>Clears in one to two business days. No fee. Access releases on settlement.</p></div></label>
+      <label class="opt"><input type="radio" name="pay" value="card">
+        <div><b>Debit or credit card</b><p>Instant. A 2.9% processing fee is added and shown before you confirm.</p></div></label>
+      <label class="opt"><input type="radio" name="pay" value="check">
+        <div><b>Mail a check or money order</b><p>No fee, ever. Access releases when it clears. This option stays open by law and cannot be removed.</p></div></label>
+      <div class="note" style="margin-top:4px"><b>Deposit protection</b>Your ${money(dep)} deposit is held separately. If any of it is kept at move-out you get an itemized statement with receipts within 21 days, or it comes back in full.</div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" onclick="closeSheet()">Cancel</button>
+      <button class="btn approve" onclick="payNow('${aid}')">Confirm payment</button>
+    </div></div></div>`;
+}
+function payNow(aid){
+  const m=document.querySelector('input[name=pay]:checked').value;
+  const a=S.applications.find(x=>x.id===aid);
+  a.movein.paid=true;a.movein.method=m;
+  closeSheet();
+  toast(m==='check'?'Check instructions emailed. Access releases the day it clears.':'Payment confirmed. Receipt in your inbox.');
+  render();
+}
+function toggleSM(aid){
+  const a=S.applications.find(x=>x.id===aid);
+  a.movein.serviceMember=!a.movein.serviceMember;
+  if(a.movein.serviceMember)toast('Deposit capped at one month. Thank you for your service.');
+  render();
+}
+function mv(k){
+  const a=S.applications.find(x=>x.id===S.focus);
+  a.movein[k]=true;
+  toast({signed:'Lease signed. Countersigned copy sent.',photos:'Photos filed with timestamps. Milton got a copy too.',keys:'Access released. Your code is live.'}[k]);
+  render();
+}
+
+/* ================= FORMS ================= */
+function openForm(pid){
+  const p=prop(pid);
+  document.getElementById('overlay').innerHTML=`
+  <div class="sheet" onclick="if(event.target===this)closeSheet()"><div class="sheet-in" role="dialog" aria-modal="true">
+    <div class="sheet-head"><h2>Send to owner</h2><p>${label(p)} &middot; ${p.id}</p></div>
+    <div class="sheet-body">
+      <div class="field"><label for="f-kind">Transaction</label>
+        <select id="f-kind"><option value="lease">Lease</option><option value="sale">Sale</option></select></div>
+      <div class="two">
+        <div class="field"><label for="f-party">Buyer or tenant</label><input id="f-party" placeholder="Full legal name"></div>
+        <div class="field"><label for="f-amt">Amount</label><input id="f-amt" class="mono" type="number" value="${p.rent}"></div>
+      </div>
+      <div class="field"><label for="f-terms">Terms the owner should see</label><textarea id="f-terms" rows="3" placeholder="12-month lease, first and deposit, move-in Sept 1"></textarea></div>
+      <div class="field"><label for="f-note">Your recommendation</label><input id="f-note" placeholder="What you would tell them on the phone"></div>
+    </div>
+    <div class="sheet-foot"><button class="btn ghost" onclick="closeSheet()">Cancel</button>
+      <button class="btn approve" onclick="submitForm('${pid}')">Send for approval</button></div>
+  </div></div>`;
+}
+function submitForm(pid){
+  const party=document.getElementById('f-party').value.trim(),amt=+document.getElementById('f-amt').value;
+  if(!party||!amt){toast('Add a name and an amount before sending.');return}
+  const kind=document.getElementById('f-kind').value;
+  S.requests.unshift({id:'RQ-'+uid(),propId:pid,kind:kind,agent:'R. Castellano',party:party,amount:amt,
+    terms:document.getElementById('f-terms').value.trim()||'Standard terms on file.',
+    note:document.getElementById('f-note').value.trim(),status:'pending',at:'just now'});
+  S.activity.unshift({t:'now',s:'You submitted a '+kind+' for '+label(prop(pid))+' — owner notified'});
+  closeSheet();toast('Sent. Milton has a push notification with two buttons.');render();
+}
+
+function openApply(pid){
+  const p=prop(pid);
+  document.getElementById('overlay').innerHTML=`
+  <div class="sheet" onclick="if(event.target===this)closeSheet()"><div class="sheet-in" role="dialog" aria-modal="true">
+    <div class="sheet-head"><h2>Apply for ${label(p)}</h2>
+      <p>${money(p.rent)}/mo &middot; needs ${money(p.rent*2.5)}/mo income &middot; 640+ credit &middot; no unlawful detainer judgment in 3 years</p></div>
+    <div class="sheet-body">
+      <div class="two">
+        <div class="field"><label for="a-name">Full legal name</label><input id="a-name" placeholder="As it appears on your ID"></div>
+        <div class="field"><label for="a-inc">Annual income</label><input id="a-inc" class="mono" type="number" placeholder="112000"></div>
+      </div>
+      <div class="field"><label for="a-email">Email</label><input id="a-email" type="email" placeholder="you@example.com"></div>
+      <div class="consent"><input type="checkbox" id="a-ok">
+        <label for="a-ok">I authorize Milton's Properties to obtain a consumer report &mdash; credit, income and eviction history &mdash; for the purpose of this tenancy. I have read the screening criteria and the list of what can and cannot be held against me. <strong>No criminal history is requested here</strong>, and none will be reviewed unless a conditional offer is made first.</label></div>
+      <div class="consent"><input type="checkbox" id="a-fee">
+        <label for="a-fee">I understand the $66 fee covers the actual cost of screening, that applications are worked in the order received, and that any unused portion is refunded within seven days.</label></div>
+    </div>
+    <div class="sheet-foot"><button class="btn ghost" onclick="closeSheet()">Cancel</button>
+      <button class="btn approve" onclick="submitApply('${pid}')">Submit application</button></div>
+  </div></div>`;
+}
+function submitApply(pid){
+  const name=document.getElementById('a-name').value.trim();
+  if(!name){toast('Add your name to continue.');return}
+  if(!document.getElementById('a-ok').checked){toast('Screening cannot start without your written authorization.');return}
+  if(!document.getElementById('a-fee').checked){toast('Confirm you understand the fee terms.');return}
+  const income=+document.getElementById('a-inc').value||0;
+  const p=prop(pid);
+  const app={id:'AP-'+uid(),propId:pid,name:name,income:income,stage:0,decision:null,at:'just now',approvedAt:'',
+    movein:{signed:false,paid:false,photos:false,keys:false,serviceMember:false,method:'',
+      deposit:p.rent*2,code:String(Math.floor(100000+Math.random()*899999)),moveDate:'Aug 1'}};
+  S.applications.unshift(app);
+  closeSheet();render();
+  toast('Application received. Screening starts now.');
+  let i=0;
+  const tick=setInterval(()=>{
+    i++;app.stage=Math.min(i,4);
+    if(i>4){
+      clearInterval(tick);
+      if(income>=p.rent*12*2.5){
+        S.requests.unshift({id:'RQ-'+uid(),propId:pid,kind:'lease',agent:'Automated screening',party:name,
+          amount:p.rent,terms:'Meets every posted criterion. Credit 712, income '+(income/(p.rent*12)).toFixed(1)+'x rent, no eviction judgments.',
+          note:'First qualified applicant. Conditional offer stage — your approval releases the lease packet.',
+          status:'pending',at:'just now',appId:app.id});
+        S.activity.unshift({t:'now',s:name+' cleared screening for '+label(p)+' — needs your approval'});
+        toast('You meet every criterion. Sent to the owner.');
+      }else{
+        app.decision='declined';app.stage=7;
+        S.activity.unshift({t:'now',s:name+' did not meet posted income criteria — adverse action notice sent automatically'});
+        toast('Income fell short of the posted criterion. Your notice explains everything.');
+      }
+    }
+    render();
+  },1000);
+}
+
+function decide(rid,verdict){
+  const r=S.requests.find(x=>x.id===rid);r.status=verdict;
+  const p=prop(r.propId);
+  const a=r.appId?S.applications.find(x=>x.id===r.appId):null;
+  if(verdict==='approved'){
+    p.status=r.kind==='sale'?'pending':'leased';
+    if(r.kind!=='sale'){p.tenant=r.party;p.leaseEnd='2027-07-31'}
+    if(a){a.decision='approved';a.stage=7;a.approvedAt='just now'}
+    S.activity.unshift({t:'now',s:'You approved '+(r.kind==='sale'?'the sale of ':'the lease at ')+label(p)+' — move-in unlocked'});
+    toast('Approved. Their move-in checklist just went live.');
+  }else{
+    if(a){a.decision='declined';a.stage=7}
+    S.activity.unshift({t:'now',s:'You declined '+r.id+' — adverse action notice queued for '+r.party});
+    toast('Declined. The adverse action notice is written and sent.');
+  }
+  render();
+}
+
+function go(v,f){S.view=v;S.focus=f||null;window.scrollTo({top:0,behavior:'smooth'});render()}
+function closeSheet(){document.getElementById('overlay').innerHTML=''}
+function toast(msg){
+  const el=document.createElement('div');
+  el.className='toast';el.textContent=msg;el.setAttribute('role','status');
+  document.body.appendChild(el);setTimeout(()=>el.remove(),3800);
+}
+function render(){
+  document.getElementById('app').innerHTML=
+    S.role==='owner'?ownerView():S.role==='agent'?agentView():S.role==='buyer'?buyerView():renterView();
+  document.querySelectorAll('.role').forEach(b=>b.setAttribute('aria-pressed',b.dataset.role===S.role));
+  document.getElementById('whoami').textContent=
+    {owner:'Milton Reyes / 6 doors / LLC',agent:'R. Castellano / DRE 02114887',renter:'T. Alvarez',buyer:'J. Okafor / pre-approved'}[S.role];
+}
+document.querySelectorAll('.role').forEach(b=>{
+  b.onclick=()=>{S.role=b.dataset.role;S.view='browse';S.focus=null;window.scrollTo({top:0,behavior:'smooth'});render()};
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+render();
+</script>

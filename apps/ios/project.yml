@@ -1,0 +1,34 @@
+name: MiltonsProperties
+
+options:
+  bundleIdPrefix: com.sirius
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+targets:
+  MiltonsProperties:
+    type: application
+    platform: iOS
+    sources:
+      - path: MiltonsProperties
+        excludes:
+          - "Web"
+      # Folder reference, so index.html lands in the bundle at Web/index.html
+      # rather than being flattened into the root.
+      - path: MiltonsProperties/Web
+        type: folder
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sirius.MiltonsProperties
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: MiltonsProperties/Info.plist
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        DEVELOPMENT_TEAM: ""
+        CODE_SIGN_STYLE: Automatic

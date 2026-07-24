@@ -1,0 +1,46 @@
+# ============================================================================
+# SECURITY: Minimum release age for npm packages (supply-chain attack defense)
+# ============================================================================
+#
+# Any npm package version must have been published for at least 1 day (1440
+# minutes) before pnpm will install it. Malicious npm releases are almost always
+# discovered and pulled within hours, so a 1-day delay is a strong safety buffer.
+#
+# DO NOT DISABLE THIS. If you urgently need a fresh release (e.g. a security
+# bugfix from a trusted publisher), add it to minimumReleaseAgeExclude and remove
+# the exclusion once the window has passed.
+# ============================================================================
+minimumReleaseAge: 1440
+
+packages:
+  - apps/*
+  - services/*
+  - packages/*
+
+# Single source of truth for dependency versions across the workspace. Packages
+# reference these with `"catalog:"` instead of pinning their own version.
+catalog:
+  "@fastify/cors": ^10.0.1
+  "@types/node": ^22.9.0
+  "@types/react": ^19.2.0
+  "@types/react-dom": ^19.2.0
+  "@vitejs/plugin-react": ^5.0.4
+  drizzle-kit: ^0.31.1
+  drizzle-orm: ^0.45.2
+  fastify: ^5.1.0
+  postgres: ^3.4.5
+  react: 19.1.0
+  react-dom: 19.1.0
+  tsup: ^8.3.5
+  tsx: ^4.21.0
+  typescript: ^5.6.3
+  vite: ^7.3.2
+  zod: ^3.25.76
+
+autoInstallPeers: false
+
+onlyBuiltDependencies:
+  - esbuild
+
+allowBuilds:
+  esbuild: true
