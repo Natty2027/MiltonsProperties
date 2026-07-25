@@ -1,5 +1,7 @@
 # Milton's Properties
 
+### ▶ [Try the live demo →](https://natty2027.github.io/MiltonsProperties/)
+
 An owner / realtor / renter platform for a small California property portfolio —
 tracking sales, leases, and tenant screening. This repository is a **proof of
 concept**: a working prototype and iOS shell, plus a typed backend/web scaffold
